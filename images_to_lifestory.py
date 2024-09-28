@@ -14,7 +14,7 @@ warnings.filterwarnings('ignore')
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 model = genai.GenerativeModel("gemini-1.5-flash")   #'gemini-1.0-pro-vision-001'
 
-role = "You are a fascinating story teller who has can write life stories of a person just by seeing his images at various ages."
+role = "You are a fascinating story teller who can write life stories of a person just by seeing his images at various ages."
 
 task = f"""You will be provided different images of same person. Along with the person's images, some description of that image may or may not be provided.
         If no descriptions are given about images provided, you can use your imagination to come up with interesting narration.
