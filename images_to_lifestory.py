@@ -80,19 +80,3 @@ if submit_button:
 
 # Saving the converted audio in a mp3 file named
 #audio_file.save("Elly.mp3")
-
-
-############################### Old code
-#instruction1 = "Her pic when she was born: "
-#pic1 = PIL.Image.open("IMG-20151222-WA0003.jpg")
-
-# instruction2 = "Her picture at the age of 1.5 years in Malaysia Hotel during vacation: "
-# pic2 = PIL.Image.open('IMG_0083.JPG')
-#uploaded_pic2 = st.file_uploader(label="Picture 2", type=["png", "jpg", "jpeg"])
-#instruction2 = st.text_input(label="Description of Picture 2")
-
-# instruction3 = "Her picture at the age of 3 years on her first cruise trip to Bali from Singapore: "
-# pic3 = PIL.Image.open('IMG_0764.JPG')
-
-# instruction4 = "Her picture at the age of 4.5 years in her first school's Father's day celebration: "
-# pic4 = PIL.Image.open('FRSA4569.JPG')
