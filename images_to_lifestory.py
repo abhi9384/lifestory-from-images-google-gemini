@@ -15,6 +15,10 @@ warnings.filterwarnings('ignore')
 
 st.set_page_config(layout="wide", page_title="Lifestory from Images")
 
+#TODO add audio
+# limit the number of pics to upload
+# add session info
+
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 model = genai.GenerativeModel("gemini-1.5-flash")   #'gemini-1.0-pro-vision-001'
 
@@ -43,34 +47,66 @@ submit_button = st.button(label="Generate Lifestory", key="GenLifeStory")
 
 # List to hold images
 pics_list = []
+is_error = 'N'
 
 if submit_button:
-    if uploaded_pics:
+
+    if not person_name:
+        st.sidebar.error("Please input person name")
+        is_error = 'Y'
+
+    elif uploaded_pics != None:
+        if len(uploaded_pics) > 10:
+            st.error("You can only upload a maximum of 10 pictures.")
+            is_error = 'Y'
+
+    if is_error == 'N': 
+
         for uploaded_pic in uploaded_pics:
             pic = PIL.Image.open(uploaded_pic)
             pics_list.append(pic)
 
-        # Add images and descriptions to content
-        content.extend(pics_list)
-        if pics_description:
-            content.append(pics_description)
+            # Add images and descriptions to content
+            content.extend(pics_list)
+            if pics_description:
+                content.append(pics_description)
 
-        # Generate response from AI model
-        response = model.generate_content(content)
-        llm_text_response = response.text
+            # Generate response from AI model
+            response = model.generate_content(content)
+            llm_text_response = response.text
 
-        # Display results
-        st.title(":blue[Lifestory] :sunglasses:")
-        st.markdown("### Generated Lifestory")
-        st.markdown(llm_text_response)
-        
-        # Display uploaded images
-        st.markdown("### Uploaded Pictures")
-        cols = st.columns(len(pics_list))
-        for col, img in zip(cols, pics_list):
-            col.image(img, use_column_width=True)
+            # Display results
+            st.title(":blue[Lifestory] :sunglasses:")
+            #st.markdown("### Generated Lifestory")
+            st.markdown(llm_text_response)
+            
+            # Display uploaded images
+            st.markdown("### Uploaded Pictures")
+            cols = st.columns(len(pics_list))
+            for col, img in zip(cols, pics_list):
+                col.image(img, use_column_width=True)
 
-        st.success("Lifestory generated successfully!")
+            st.success("Lifestory generated successfully!")
+
+            # Language in which you want to convert
+            language = 'en'
+
+            # Passing the text and language to the engine, 
+            # here we have marked slow=False. Which tells 
+            # the module that the converted audio should 
+            # have a high speed
+            #audio_filename = person_name + ".mp3"
+            #audio_file = gTTS(text=llm_text_response, lang=language, slow=False)
+
+            # Saving the converted audio in a mp3 file named
+            #audio_file.save(audio_filename)
+
+            #st.audio(audio_file, format='audio/mp3')
+
 
 # Footer
 st.markdown('<div style="text-align: center; margin-top: 50px; font-size: 14px; color: #888;">© 2024 Your Company. All rights reserved.</div>', unsafe_allow_html=True)
+
+
+
+
