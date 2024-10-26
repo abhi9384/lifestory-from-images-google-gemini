@@ -57,13 +57,6 @@ def delete_user_story(userid, storyid):
 
 def view_user_stories(): 
 
-    # resp = table.query(
-    #     TableName = 'User-Pix-Tales',
-    #     KeyConditionExpression = "PK=:pk",
-    #         ExpressionAttributeValues = {
-    #             ':pk': {'S': 'abhi'}
-    #         }
-    #      )
     response = table.query(
        KeyConditionExpression=Key('PK').eq('abhi')
     )
@@ -113,17 +106,15 @@ def view_user_stories():
 
                         presigned_url = s3_client.generate_presigned_url(
                             ClientMethod='get_object',
-                            ExpiresIn=60, 
+                            ExpiresIn=3600, 
                             Params={
                                 'Bucket': s3_bucket_name,
                                 'Key': key, 
                                 'ResponseContentType': 'image/jpeg'
                             }
                         )
-                        #st.write(presigned_url)
-                        #st.image(presigned_url)
                 
-        st.write(items)
+        #st.write(items)
 
     else:
         st.markdown('<b>You have not created any stories</b>', unsafe_allow_html=True)

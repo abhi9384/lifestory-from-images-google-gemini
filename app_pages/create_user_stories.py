@@ -87,18 +87,6 @@ def create_save_user_stories():
                     url = f"https://{s3_bucket_name}.s3.{aws_region_name}.amazonaws.com/{key}"
                     pics_s3_urls.append(url) 
 
-                    #TODO https://docs.aws.amazon.com/lambda/latest/dg/with-s3-tutorial.html
-                    #TODO use this to generate presigned url at time of fetching stories on view page
-                    # url = s3_client.generate_presigned_url(
-                    #     ClientMethod='get_object',
-                    #     ExpiresIn=60, 
-                    #     Params={
-                    #         'Bucket': s3_bucket_name,
-                    #         'Key': key, 
-                    #         'ResponseContentType': 'image/jpeg'
-                    #     }
-                    # )
-                
 
                 # Add images and descriptions to content
                 content.extend(pics_list)

@@ -27,6 +27,7 @@ st.sidebar.header("Register/Login")
 
 # Simulate a simple user authentication
 def authenticate(username, password):
+    #TODO add aws cognito
     return username == "abhi" and password == "password"
 
 # Login Page
@@ -86,9 +87,6 @@ def post_login():
 # Main app function
 def main():
 
-    st.session_state.authenticated = True
-    st.session_state.username = "abhi"
-    
     if 'authenticated' not in st.session_state:
         login_page()
 
