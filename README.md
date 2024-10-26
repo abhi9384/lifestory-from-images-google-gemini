@@ -7,9 +7,13 @@ This Python script generates a fascinating life story of a person based on their
 
 ## Features
 
+- **Create Your Story**: Users can create and save their stories.
+- **View Your Stories**: Users can view stories they've created.
+- **Search Stories**: Users can search through all available stories.
 - Generates a life story from multiple images.
 - Supports text-to-speech conversion of the generated story.
 - Uses Google’s Gemini generative model for story creation.
+- Uses AWS for storing images and data
 
 ## Requirements
 
