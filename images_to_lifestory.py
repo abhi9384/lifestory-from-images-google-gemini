@@ -1,9 +1,16 @@
 from IPython.display import display
 import streamlit as st
+from streamlit_navigation_bar import st_navbar
+from app_pages.create_user_stories import create_save_user_stories
+from app_pages.view_user_saved_stories import view_user_stories
+from app_pages.search_stories import search_all_stories
+from st_social_media_links import SocialMediaIcons
 import google.generativeai as genai
 import PIL.Image
 import numpy as np
 from gtts import gTTS
+import boto3
+from datetime import datetime
 import warnings
 import os
 from dotenv import load_dotenv
@@ -13,100 +20,80 @@ load_dotenv()
 # Settings the warnings to be ignored 
 warnings.filterwarnings('ignore') 
 
-st.set_page_config(layout="wide", page_title="Lifestory from Images")
+st.set_page_config(layout="wide", page_title="Lifestory from Images", initial_sidebar_state="expanded")
 
-#TODO add audio
-# limit the number of pics to upload
-# add session info
+st.sidebar.title("Login Page")
+st.sidebar.header("Register/Login")
 
-genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
-model = genai.GenerativeModel("gemini-1.5-flash")   #'gemini-1.0-pro-vision-001'
+# Simulate a simple user authentication
+def authenticate(username, password):
+    return username == "abhi" and password == "password"
 
-role = "You are a fascinating story teller who can write life stories of a person just by seeing his images at various ages."
+# Login Page
+def login_page():
 
-task = f"""You will be provided different images of same person. Along with the person's images, some description of that image may or may not be provided.
-        If no descriptions are given about images provided, you can use your imagination to come up with interesting narration.
-        If descriptions are given for images, you should use those descriptions along with your imagination to come up with fascinating life story.
-        I want you to write a fascinating life story for a person whose images are given."""
+    username = st.sidebar.text_input("Username")
+    password = st.sidebar.text_input("Password", type="password")
 
-# Sidebar inputs
-st.sidebar.header("Input Details")
-person_name = st.sidebar.text_input("Name of the person")
-with st.sidebar:
-       person_gender = st.radio("Gender of the person", ("Male", "Female"))
+    with st.sidebar:
+        if st.sidebar.button("Login", key="Login"):
+    
+            if authenticate(username, password):
+                st.session_state.authenticated = True
+                st.session_state.username = username
+                st.success("Login successful!")
+                st.sidebar.write('<b>Logged in User: ' + st.session_state.username + '</b>', unsafe_allow_html=True)
+            else:
+                st.sidebar.error("Invalid username or password.")
 
-instruction0 = f"Name of the person is {person_name} and gender is {person_gender}. "
+def post_login():
+    
+    pages = ["Create Your Story", "View Your Stories", "Search Stories"]
+    styles = {
+        "nav": {
+                "background-color": "royalblue",
+        },
+        "div": {
+            "max-width": "32rem",
+        },
+        "span": {
+            "border-radius": "0.5rem",
+            "color": "rgb(49, 51, 63)",
+            "margin": "0 0.125rem",
+            "padding": "0.4375rem 0.625rem",
+        },
+        "active": {
+            "background-color": "rgba(255, 255, 255, 0.25)",
+        },
+        "hover": {
+            "background-color": "rgba(255, 255, 255, 0.35)",
+        },
+    }
 
-content = [role, task, instruction0]
+    page = st_navbar(pages, styles=styles)
+    st.title("_PixTales_ :sunglasses: Your story generator")
+    
+    functions = {
+    "Create Your Story": create_save_user_stories,
+    "View Your Stories": view_user_stories,
+    "Search Stories": search_all_stories
+    }
 
-# File uploader and description input
-uploaded_pics = st.file_uploader(label="Pictures", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
-pics_description = st.text_area(label="Please provide description of pictures uploaded and anything else you want to mention about the person")
+    go_to = functions.get(page)
+    if go_to:
+        go_to()
 
-submit_button = st.button(label="Generate Lifestory", key="GenLifeStory")
+# Main app function
+def main():
 
-# List to hold images
-pics_list = []
-is_error = 'N'
+    st.session_state.authenticated = True
+    st.session_state.username = "abhi"
+    
+    if 'authenticated' not in st.session_state:
+        login_page()
 
-if submit_button:
+    if 'authenticated' in st.session_state:
+        post_login()
 
-    if not person_name:
-        st.sidebar.error("Please input person name")
-        is_error = 'Y'
-
-    elif uploaded_pics != None:
-        if len(uploaded_pics) > 10:
-            st.error("You can only upload a maximum of 10 pictures.")
-            is_error = 'Y'
-
-    if is_error == 'N': 
-
-        for uploaded_pic in uploaded_pics:
-            pic = PIL.Image.open(uploaded_pic)
-            pics_list.append(pic)
-
-            # Add images and descriptions to content
-            content.extend(pics_list)
-            if pics_description:
-                content.append(pics_description)
-
-            # Generate response from AI model
-            response = model.generate_content(content)
-            llm_text_response = response.text
-
-            # Display results
-            st.title(":blue[Lifestory] :sunglasses:")
-            #st.markdown("### Generated Lifestory")
-            st.markdown(llm_text_response)
-            
-            # Display uploaded images
-            st.markdown("### Uploaded Pictures")
-            cols = st.columns(len(pics_list))
-            for col, img in zip(cols, pics_list):
-                col.image(img, use_column_width=True)
-
-            st.success("Lifestory generated successfully!")
-
-            # Language in which you want to convert
-            language = 'en'
-
-            # Passing the text and language to the engine, 
-            # here we have marked slow=False. Which tells 
-            # the module that the converted audio should 
-            # have a high speed
-            #audio_filename = person_name + ".mp3"
-            #audio_file = gTTS(text=llm_text_response, lang=language, slow=False)
-
-            # Saving the converted audio in a mp3 file named
-            #audio_file.save(audio_filename)
-
-            #st.audio(audio_file, format='audio/mp3')
-
-
-# Footer
-st.markdown('<div style="text-align: center; margin-top: 50px; font-size: 14px; color: #888;">© 2024 Your Company. All rights reserved.</div>', unsafe_allow_html=True)
-
-
-
-
+if __name__ == "__main__":
+    main()
